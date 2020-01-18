@@ -20,3 +20,11 @@ for line in lines:
     _line = line.split(' +++$+++ ')
     if len(_line) == 5:
         id2line[_line[0]] = _line[4]
+
+#Creating List of all conversations
+        
+conversations_ids = []
+for conversation in conversations[:-1]:
+    _conversation = conversation.split(' +++$+++ ')[-1][1:-1].replace("'","").replace(" ", "")
+    conversations_ids.append(_conversation.split(','))
+    
