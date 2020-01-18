@@ -12,8 +12,8 @@ import time
 
 
 #Importing the dataset
-lines = open(r"C:\Users\farookjintha\Desktop\Projects-FJ\FJ-chatbot\Chatbot-NLP\movie_lines.txt", encoding = 'utf-8', errors = 'ignore').read().split('\n')
-conversations = open(r"C:\Users\farookjintha\Desktop\Projects-FJ\FJ-chatbot\Chatbot-NLP\movie_conversations.txt", encoding = 'utf-8', errors = 'ignore').read().split('\n')
+lines = open(r"C:\Users\farookjintha\Desktop\Chatbot-NLP\movie_lines.txt", encoding = 'utf-8', errors = 'ignore').read().split('\n')
+conversations = open(r"C:\Users\farookjintha\Desktop\Chatbot-NLP\movie_conversations.txt", encoding = 'utf-8', errors = 'ignore').read().split('\n')
 
 id2line = {}
 for line in lines:
