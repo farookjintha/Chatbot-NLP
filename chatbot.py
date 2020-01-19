@@ -21,8 +21,7 @@ for line in lines:
     if len(_line) == 5:
         id2line[_line[0]] = _line[4]
 
-#Creating List of all conversations
-        
+#Creating List of all conversations        
 conversations_ids = []
 for conversation in conversations[:-1]:
     _conversation = conversation.split(' +++$+++ ')[-1][1:-1].replace("'","").replace(" ", "")
@@ -98,8 +97,7 @@ for word, count in word2count.items():
         answerswords2int[word] = word_number
         word_number += 1
 
-#Adding last tokens to these two dictionaries
-    
+#Adding last tokens to these two dictionaries   
 tokens = ['<PAD>', '<EOS>', '<OUT>', '<SOS>']
 
 for token in tokens:
@@ -150,7 +148,6 @@ for length in range(1, 25+1):
 #BUILDING SEQ2SEQ MODEL
 
 #Creating placeholders for the inputs and the targets
-
 def model_inputs():
     inputs = tf.placeholder(tf.int32, [None, None], name = 'input') #input placeholder
     targets = tf.placeholder(tf.int32, [None, None], name = 'target') #target placeholder
@@ -158,5 +155,21 @@ def model_inputs():
     keep_prob = tf.placeholder(tf.float32, name = 'keep_prob') #keep_prob placeholder
     return inputs, targets, lr, keep_prob
 
+#Preprocessing the target
+def preprocess_targets(targets, word2int, batch_size):
+    left_side = tf.fill([batch_size, 1], word2int['<SOS>'])
+    right_side = tf.strided_slice(targets, [0,0], [batch_size, -1], [1,1])
+    preprocessed_targets = tf.concat([left_side, right_side], 1) #AXIS : 1 for horizontal concat, 0 for vertical concat
+    return preprocessed_targets
 
-    
+#Creating the Encoder RNN Layer
+def encoder_rnn_layer(rnn_inputs, rnn_size, num_layers, keep_prob, sequence_length):
+    lstm = tf.contrib.rnn.BasicLSTMCell(rnn_size)
+    lstm_dropout = tf.contrib.rnn.DropoutWrapper(lstm, input_keep_prob = keep_prob)
+    encoder_cell = tf.contrib.rnn.MultiRNNCell([lstm_dropout]*num_layers)
+    _, encoder_state = tf.nn.bidirectional_dynamic_rnn(cell_fw = encoder_cell,
+                                                       cell_bw = encoder_cell,
+                                                       sequence_length = sequence_length,
+                                                       inputs = rnn_inputs,
+                                                       dtype = tf.float32)
+    return encoder_state
