@@ -163,7 +163,7 @@ def preprocess_targets(targets, word2int, batch_size):
     return preprocessed_targets
 
 #Creating the Encoder RNN Layer
-def encoder_rnn_layer(rnn_inputs, rnn_size, num_layers, keep_prob, sequence_length):
+def encoder_rnn(rnn_inputs, rnn_size, num_layers, keep_prob, sequence_length):
     lstm = tf.contrib.rnn.BasicLSTMCell(rnn_size)
     lstm_dropout = tf.contrib.rnn.DropoutWrapper(lstm, input_keep_prob = keep_prob)
     encoder_cell = tf.contrib.rnn.MultiRNNCell([lstm_dropout]*num_layers)
@@ -216,7 +216,7 @@ def decode_test_set(encoder_state, decoder_cell, decoder_embeddings_matrix, sos_
     return test_predictions
 
 #Creating the Decoder RNN Layer
-def decoder_rnn(decoder_embedded_input, decoder_embedding_matrix, encoder_state,
+def decoder_rnn(decoder_embedded_input, decoder_embeddings_matrix, encoder_state,
                 num_words, sequence_length, rnn_size, num_layers, word2int, keep_prob, batch_size):
     with tf.variable_scope('decoding') as decoding_scope:
         lstm = tf.contrib.rnn.BasicLSTMCell(rnn_size)
@@ -241,7 +241,7 @@ def decoder_rnn(decoder_embedded_input, decoder_embedding_matrix, encoder_state,
         decoding_scope.reuse_variables()
         test_predictions = decode_test_set(encoder_state,
                                            decoder_cell,
-                                           decoder_embedding_matrix,
+                                           decoder_embeddings_matrix,
                                            word2int['<SOS>'],
                                            word2int['<EOS>'],
                                            sequence_length-1,
@@ -251,3 +251,26 @@ def decoder_rnn(decoder_embedded_input, decoder_embedding_matrix, encoder_state,
                                            keep_prob,
                                            batch_size)
         return training_predictions, test_predictions
+    
+#Building the seq2seq model with RNN layers
+def seq2seq_model(inputs, targets, keep_prob, batch_size, sequence_length, answers_num_words, questions_num_words,
+                  encoder_embedding_size, decoder_embedding_size, rnn_size, num_layers, questionswords2int):
+    encoder_embedded_input = tf.contrib.layers.embed_sequence(inputs, 
+                                                              answers_num_words+1,
+                                                              encoder_embedding_size,
+                                                              initializer = tf.random_uniform_initializer(0,1))
+    encoder_state = encoder_rnn(encoder_embedded_input, rnn_size, num_layers, keep_prob, sequence_length)
+    preprocessed_targets = preprocess_targets(targets, questionswords2int, batch_size)
+    decoder_embeddings_matrix = tf.Variable(tf.random_uniform([questions_num_words+1, decoder_embedding_size], 0, 1))
+    decoder_embedded_input = tf.nn.embedding_lookup(decoder_embeddings_matrix, preprocessed_targets)
+    training_predictions, test_predictions = decoder_rnn(decoder_embedded_input,
+                                                         decoder_embeddings_matrix,
+                                                         encoder_state,
+                                                         questions_num_words,
+                                                         sequence_length,
+                                                         rnn_size,
+                                                         num_layers,
+                                                         questionswords2int,
+                                                         keep_prob,
+                                                         batch_size)
+    return training_predictions, test_predictions
