@@ -155,7 +155,7 @@ for length in range(1, 25+1):
 def model_inputs():
     inputs = tf.placeholder(tf.int32, [None, None], name = 'input') #input placeholder
     targets = tf.placeholder(tf.int32, [None, None], name = 'target') #target placeholder
-    lr = tf.placeholder(tf.float32, name = 'learning _rate') #learning_rate placeholder
+    lr = tf.placeholder(tf.float32, name = 'learning_rate') #learning_rate placeholder
     keep_prob = tf.placeholder(tf.float32, name = 'keep_prob') #keep_prob placeholder
     return inputs, targets, lr, keep_prob
 
@@ -297,3 +297,27 @@ keep_probability = 0.5
 #Defining the tf session
 tf.reset_default_graph()
 session = tf.InteractiveSession()
+
+#Loading the inputs to the seq2seq model
+inputs, targets, lr, keep_prob = model_inputs()
+
+#Setting the sequence length
+sequence_length = tf.placeholder_with_default(25, None, name = 'sequence_length')
+
+#Getting the shape of  the inputs sensors
+input_shape = tf.shape(inputs)
+
+#Getting the training & test predictions
+training_predictions, test_predictions = seq2seq_model(tf.reverse(inputs, [-1]),
+                                                       targets,
+                                                       keep_prob,
+                                                       batch_size,
+                                                       sequence_length,
+                                                       len(answerswords2int),
+                                                       len(questionswords2int),
+                                                       encoding_embedding_size,
+                                                       decoding_embedding_size,
+                                                       rnn_size,
+                                                       num_layers,
+                                                       questionswords2int)
+
