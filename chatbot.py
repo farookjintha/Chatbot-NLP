@@ -12,8 +12,12 @@ import time
 
 
 #Importing the dataset
-lines = open(r"C:\Users\farookjintha\Desktop\Chatbot-NLP\movie_lines.txt", encoding = 'utf-8', errors = 'ignore').read().split('\n')
-conversations = open(r"C:\Users\farookjintha\Desktop\Chatbot-NLP\movie_conversations.txt", encoding = 'utf-8', errors = 'ignore').read().split('\n')
+#lines = open(r"C:\Users\farookjintha\Desktop\Chatbot-NLP\movie_lines.txt", encoding = 'utf-8', errors = 'ignore').read().split('\n')
+#conversations = open(r"C:\Users\farookjintha\Desktop\Chatbot-NLP\movie_conversations.txt", encoding = 'utf-8', errors = 'ignore').read().split('\n')
+
+lines = open(r"C:\Users\751026\Desktop\Projects\PYTHON\Chatbot-NLP\movie_lines.txt", encoding = 'utf-8', errors = 'ignore').read().split('\n')
+conversations = open(r"C:\Users\751026\Desktop\Projects\PYTHON\Chatbot-NLP\movie_conversations.txt", encoding = 'utf-8', errors = 'ignore').read().split('\n')
+
 
 id2line = {}
 for line in lines:
@@ -274,3 +278,17 @@ def seq2seq_model(inputs, targets, keep_prob, batch_size, sequence_length, answe
                                                          keep_prob,
                                                          batch_size)
     return training_predictions, test_predictions
+
+#TRAINING SEQ2SEQ MODEL
+
+#Setting the hyperparameters
+epochs = 100  #process of getting the batches into neural networks
+batch_size = 64
+rnn_size = 512
+num_layers = 3
+encoding_embedding_size = 512
+decoding_embedding_size = 512
+learning_rate = 0.01
+learning_rate_decay = 0.9
+min_learning_rate = 0.0001
+keep_probability = 0.5
