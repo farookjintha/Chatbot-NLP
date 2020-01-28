@@ -295,8 +295,8 @@ keep_probability = 0.5
 
 
 #Defining the tf session
-tf.compat.v1.reset_default_graph()
-session = tf.compat.v1.InteractiveSession()
+tf.reset_default_graph()
+session = tf.InteractiveSession()
 
 #Loading the inputs to the seq2seq model
 inputs, targets, lr, keep_prob = model_inputs()
